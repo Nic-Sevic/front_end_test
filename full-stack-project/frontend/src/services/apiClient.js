@@ -8,25 +8,25 @@ const apiClient = axios.create({
 });
 
 // Function to handle GET requests
-export const get = async (url: string) => {
+export const get = async (url) => {
     const response = await apiClient.get(url);
     return response.data;
 };
 
 // Function to handle POST requests
-export const post = async (url: string, data: any) => {
+export const post = async (url, data) => {
     const response = await apiClient.post(url, data);
     return response.data;
 };
 
 // Function to handle PUT requests
-export const put = async (url: string, data: any) => {
+export const put = async (url, data) => {
     const response = await apiClient.put(url, data);
     return response.data;
 };
 
 // Function to handle DELETE requests
-export const del = async (url: string) => {
+export const del = async (url) => {
     const response = await apiClient.delete(url);
     return response.data;
 };

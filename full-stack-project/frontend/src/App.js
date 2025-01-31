@@ -1,11 +1,10 @@
 import React from 'react';
-import OrgChartComponent from './OrgChart';
 
-const App: React.FC = () => {
+const App = () => {
     return (
         <div>
             <h1>Welcome to the Full Stack Project</h1>
-            <OrgChartComponent />
+            {/* Additional components and routing can be added here */}
         </div>
     );
 };
