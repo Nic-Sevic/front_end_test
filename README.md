@@ -52,17 +52,17 @@ Please document time spent on different components
 	- Company-specific data isolation
 
 ## Required Database Schema (minimum)
-companies
+- companies
 	- id
 	- name
 	- created_at
-users
+- users
 	- id
 	- company_id
 	- email
 	- password_hash
 	- created_at
-employees
+- employees
 	- id
 	- company_id
 	- name
@@ -71,7 +71,7 @@ employees
 	- manager_id
 	- created_at
 	- updated_at
-performance_ratings
+- performance_ratings
 	- id
 	- employee_id
 	- category
@@ -79,25 +79,25 @@ performance_ratings
 	- updated_at
 
 ## Technical Choices:
-Frontend
-	- React (required)
-	- Choice of:
-		- Org chart library (react-org-chart, d3-org-chart, etc.)
-		- UI component library
-		- State management solution
-		- API client
-Backend
-	- Python with FastAPI (required)
-	- Choice of:
-		- Authentication library
-		- Database ORM
-		- API documentation tool
+### Frontend
+- React (required)
+- Choice of:
+	- Org chart library (react-org-chart, d3-org-chart, etc.)
+	- UI component library
+	- State management solution
+	- API client
+### Backend
+- Python with FastAPI (required)
+- Choice of:
+	- Authentication library
+	- Database ORM
+	- API documentation tool
 
-Database
-	- Choice of:
-		- SQLite (recommended for simplicity)
-		- PostgreSQL
-		- MySQL
+### Database
+- Choice of:
+	- SQLite (recommended for simplicity)
+	- PostgreSQL
+	- MySQL
 
 ## Technical Decision Guidelines
 	1. Justify all technical decisions made during development
