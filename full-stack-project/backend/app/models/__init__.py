@@ -1,9 +1,5 @@
-from sqlalchemy.ext.declarative import declarative_base
-
-Base = declarative_base()
-
-from .employee import Employee
-from .metrics import PerformanceMetric, SkillAssessment, MetricType
+from ..database import Base
+from .models import Company, Employee, PerformanceMetric, User
 
 # This makes these models available when someone imports from models
-__all__ = ['Employee', 'PerformanceMetric', 'SkillAssessment', 'MetricType']
+__all__ = ['Company', 'Employee', 'PerformanceMetric', 'User']
