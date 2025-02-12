@@ -3,6 +3,14 @@ body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
     color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+#root {
+    width: 100%;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -37,4 +45,20 @@ a:hover {
 
 .button:hover {
     background-color: #0056b3;
+}
+
+.chartNode {
+    border: solid 3px red;
+    border-radius: 3px;
+    padding: 5px;
+    width: auto;
+    display: inline-block;
+}
+
+#orgChart, #employeeManagement {
+    border: 1px solid black;
+    margin: 20px;
+    padding: 10px;
+    width: 80%;
+    text-align: center;
 }
