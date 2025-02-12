@@ -11,6 +11,7 @@ class CompanyCreate(CompanyBase):
 
 class Company(CompanyBase):
     id: int
+    name: str
     created_at: datetime
 
     class Config:
@@ -34,6 +35,9 @@ class Employee(EmployeeBase):
 
     class Config:
         orm_mode = True
+        
+class EmployeeUpdate(EmployeeBase):
+	pass
 
 # PerformanceMetric schemas
 class PerformanceMetricBase(BaseModel):
@@ -50,6 +54,9 @@ class PerformanceMetric(PerformanceMetricBase):
 
     class Config:
         orm_mode = True
+        
+class PerformanceMetricUpdate(PerformanceMetricBase):
+	pass
 
 # User schemas
 class UserBase(BaseModel):

@@ -1,4 +1,4 @@
-from sqlalchemy import Integer, String, ForeignKey, TIMESTAMP
+from sqlalchemy import Integer, String, ForeignKey, TIMESTAMP, func
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from ..database import Base
 
@@ -6,8 +6,8 @@ class Company(Base):
 	__tablename__ = "companies"
 
 	id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-	name: Mapped[str] = mapped_column(String, index=True)
-	created_at: Mapped[TIMESTAMP] = mapped_column(TIMESTAMP)
+	name: Mapped[str] = mapped_column(String, index=True, nullable=False)
+	created_at: Mapped[TIMESTAMP] = mapped_column(TIMESTAMP, server_default=func.now(), nullable=False)
 
 	# Relationships
 	employees = relationship("Employee", back_populates="company")
@@ -22,8 +22,8 @@ class Employee(Base):
 	title: Mapped[str] = mapped_column(String)
 	email: Mapped[str] = mapped_column(String, unique=True, index=True)
 	manager_id: Mapped[int] = mapped_column(Integer, ForeignKey("employees.id", ondelete="SET NULL"), nullable=True)
-	created_at: Mapped[TIMESTAMP] = mapped_column(TIMESTAMP)
-	updated_at: Mapped[TIMESTAMP] = mapped_column(TIMESTAMP)
+	created_at: Mapped[TIMESTAMP] = mapped_column(TIMESTAMP, server_default=func.now(), nullable=False)
+	updated_at: Mapped[TIMESTAMP] = mapped_column(TIMESTAMP, server_default=func.now(), nullable=False)
 
 	# Relationships
 	company = relationship("Company", back_populates="employees")
@@ -38,7 +38,7 @@ class PerformanceMetric(Base):
 	employee_id: Mapped[int] = mapped_column(Integer, ForeignKey("employees.id", ondelete="CASCADE"))
 	category: Mapped[str] = mapped_column(String)
 	rating: Mapped[int] = mapped_column(Integer)
-	updated_at: Mapped[TIMESTAMP] = mapped_column(TIMESTAMP)
+	updated_at: Mapped[TIMESTAMP] = mapped_column(TIMESTAMP, server_default=func.now(), nullable=False)
 
 	# Relationships
 	employee = relationship("Employee", back_populates="performance_ratings")
@@ -50,7 +50,7 @@ class User(Base):
 	company_id: Mapped[int] = mapped_column(Integer, ForeignKey("companies.id", ondelete="CASCADE"))
 	email: Mapped[str] = mapped_column(String, unique=True, index=True)
 	password_hash: Mapped[str] = mapped_column(String)
-	created_at: Mapped[TIMESTAMP] = mapped_column(TIMESTAMP)
+	created_at: Mapped[TIMESTAMP] = mapped_column(TIMESTAMP, server_default=func.now(), nullable=False)
 
 	# Relationships
 	company = relationship("Company", back_populates="users")
