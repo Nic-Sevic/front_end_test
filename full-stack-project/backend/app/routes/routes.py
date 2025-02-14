@@ -64,10 +64,10 @@ def get_performance_metrics_by_company(company_id: int, category: Optional[str] 
 # POST new company 
 @router.post("/companies", response_model=schemas.Company)
 def create_company(company: schemas.CompanyCreate, db: Session = Depends(get_db)):
+	db_company = models.Company(**company.model_dump())
 	# check if company already exists first
 	if db.query(models.Company).filter(models.Company.name == db_company.name).first():
 		raise HTTPException(status_code=400, detail="Company already exists")
-	db_company = models.Company(**company.model_dump())
 	db.add(db_company)
 	db.commit()
 	db.refresh(db_company)
