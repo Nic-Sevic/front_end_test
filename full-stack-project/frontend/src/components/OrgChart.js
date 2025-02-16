@@ -1,34 +1,15 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import OrgChart from 'react-orgchart';
 import 'react-orgchart/index.css';
 import { useDrag, useDrop, DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-
-const orgChartData = {
-    name: 'Alice',
-    title: 'CEO',
-    children: [
-        {
-            name: 'Bob',
-            title: 'CTO',
-            children: [
-                { name: 'David', title: 'Engineer' },
-                { name: 'Eve', title: 'Engineer' },
-            ],
-        },
-        {
-            name: 'Charlie',
-            title: 'CFO',
-            children: [
-                { name: 'Frank', title: 'Accountant' },
-            ],
-        },
-    ],
-};
+import { useCompany } from '../context/context';
 
 const ItemType = 'NODE';
 
 const MyNodeComponent = ({ node, moveNode }) => {
+    console.log('Rendering node:', node); // Log node data
+
     const [, ref] = useDrag({
         type: ItemType,
         item: { node },
@@ -50,9 +31,14 @@ const MyNodeComponent = ({ node, moveNode }) => {
 };
 
 const MyOrgChart = () => {
-    const [data, setData] = useState(orgChartData);
+    const { companyData } = useCompany();
 
-    const findAndRemoveNode = (node, targetNode) => {
+    const [data, setData] = useState(() => transformToHierarchy(companyData.employeeData));
+
+    useEffect(() => {
+    }, [data]);
+
+    const findAndRemoveNode = useCallback((node, targetNode) => {
         if (!node.children) return false;
         const index = node.children.findIndex(child => child.name === targetNode.name);
         if (index !== -1) {
@@ -60,7 +46,7 @@ const MyOrgChart = () => {
             return true;
         }
         return node.children.some(child => findAndRemoveNode(child, targetNode));
-    };
+    }, []);
 
     const moveNode = useCallback((draggedNode, targetNode) => {
         const newData = { ...data };
@@ -81,13 +67,52 @@ const MyOrgChart = () => {
         addNode(newData);
 
         setData(newData);
-    }, [data]);
+    }, [data, findAndRemoveNode]);
 
     return (
         <DndProvider backend={HTML5Backend}>
             <OrgChart tree={data} NodeComponent={(props) => <MyNodeComponent {...props} moveNode={moveNode} />} />
         </DndProvider>
     );
+};
+
+const transformToHierarchy = (flatData) => {
+  // First, create a map of all employees by their ID
+  const employeeMap = new Map();
+  
+  // Assume each employee has an 'id' property. If not, we'll need to add it
+  flatData.forEach(employee => {
+      employeeMap.set(employee.id || employee.email, {
+          ...employee,
+          children: []
+      });
+  });
+  
+  // Create the tree structure
+  const root = {
+      children: []
+  };
+  
+  // Connect employees based on manager_id
+  flatData.forEach(employee => {
+      const employeeNode = employeeMap.get(employee.id || employee.email);
+      
+      if (employee.manager_id === null) {
+          // This is a root level employee
+          root.children.push(employeeNode);
+      } else {
+          // Find the manager and add this employee as their child
+          const managerNode = Array.from(employeeMap.values())
+              .find(e => e.id === employee.manager_id);
+          if (managerNode) {
+              if (!managerNode.children) managerNode.children = [];
+              managerNode.children.push(employeeNode);
+          }
+      }
+  });
+  
+  // If there's only one root level employee, return that as the root
+  return root.children.length === 1 ? root.children[0] : root;
 };
 
 export default MyOrgChart;

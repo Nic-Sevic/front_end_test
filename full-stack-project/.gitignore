@@ -1,0 +1,5 @@
+**/__pycache__/*
+.venv
+venv
+app/hash_password_script.py
+../frontend/build/

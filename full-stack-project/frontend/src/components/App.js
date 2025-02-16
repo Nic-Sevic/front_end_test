@@ -1,21 +1,18 @@
 import React from 'react';
 import MyOrgChart from './OrgChart';
+import MyEmployeeManagement from './EmployeeManagement';
+import Login from './Login';
+import { CompanyProvider } from '../context/context';
 
-const employeeData = [
-    { id: 1, name: 'Alice', title: 'CEO' },
-    { id: 2, name: 'Bob', title: 'CTO', parentId: 1 },
-    { id: 3, name: 'Charlie', title: 'CFO', parentId: 1 },
-    { id: 4, name: 'David', title: 'Engineer', parentId: 2 },
-    { id: 5, name: 'Eve', title: 'Engineer', parentId: 2 },
-    { id: 6, name: 'Frank', title: 'Accountant', parentId: 3 }
-];
 
 const App = () => {
     return (
-        <div>
+        <CompanyProvider>
+            <h1>Org chart</h1>
             <div id='orgChart'><MyOrgChart/></div>
-            <div id='employeeManagement'>MyEmployeeManagement</div>
-        </div>
+            <h1>Employee Management</h1>
+            <div id='employeeManagement'><MyEmployeeManagement/></div>
+        </CompanyProvider>
     );
 };
 
