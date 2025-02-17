@@ -8,20 +8,36 @@ import { useCompany } from '../context/context';
 const ItemType = 'NODE';
 
 const MyNodeComponent = ({ node, moveNode }) => {
-    console.log('Rendering node:', node); // Log node data
+    console.log('Rendering node:', node);
 
-    const [, ref] = useDrag({
+    const [{ isDragging }, dragRef] = useDrag({
         type: ItemType,
         item: { node },
+        collect: (monitor) => ({
+            isDragging: monitor.isDragging()
+        })
     });
 
-    const [, drop] = useDrop({
+    const [{ isOver }, dropRef] = useDrop({
         accept: ItemType,
         drop: (item) => moveNode(item.node, node),
+        collect: (monitor) => ({
+            isOver: monitor.isOver()
+        })
     });
 
+    // Combine the refs
+    const ref = (el) => {
+        dragRef(el);
+        dropRef(el);
+    };
+
     return (
-        <div ref={(node) => ref(drop(node))} className="chartNode">
+        <div 
+            ref={ref} 
+            className={`chartNode ${isDragging ? 'dragging' : ''} ${isOver ? 'drop-target' : ''}`}
+            style={{ opacity: isDragging ? 0.5 : 1 }}
+        >
             <div>
                 <div className="name">{node.name}</div>
                 <div className="title">{node.title}</div>
@@ -31,9 +47,11 @@ const MyNodeComponent = ({ node, moveNode }) => {
 };
 
 const MyOrgChart = () => {
-    const { companyData } = useCompany();
+    // Get both companyData and updateEmployee from context
+    const { companyData, updateEmployee } = useCompany();
     const [data, setData] = useState(() => transformToHierarchy(companyData.employeeData));
 
+    // Update the chart when companyData changes
     useEffect(() => {
         setData(transformToHierarchy(companyData.employeeData));
     }, [companyData]);
@@ -48,30 +66,66 @@ const MyOrgChart = () => {
         return node.children.some(child => findAndRemoveNode(child, targetNode));
     }, []);
 
-    const moveNode = useCallback((draggedNode, targetNode) => {
-        const newData = { ...data };
-
-        // Remove draggedNode from its current position
-        if (newData.name === draggedNode.name) return; // Prevent moving the root node
-        findAndRemoveNode(newData, draggedNode);
-
-        // Add draggedNode as a child of targetNode
-        const addNode = (node) => {
-            if (node.name === targetNode.name) {
-                if (!node.children) node.children = [];
-                node.children.push(draggedNode);
-                return true;
-            }
-            return node.children && node.children.some(child => addNode(child));
-        };
-        addNode(newData);
-
-        setData(newData);
-    }, [data, findAndRemoveNode]);
+    const moveNode = useCallback(async (draggedNode, targetNode) => {
+      // Early validation to prevent self-management
+      if (draggedNode.name === targetNode.name) {
+          console.error('Invalid operation: Cannot make an employee their own manager');
+          return;
+      }
+  
+      try {
+          const newData = { ...data };
+  
+          // Prevent moving the root node
+          if (newData.name === draggedNode.name) {
+              console.error('Invalid operation: Cannot move the root node');
+              return;
+          }
+  
+          // Remove node from old position
+          findAndRemoveNode(newData, draggedNode);
+  
+          // Add node to new position using our modified addNode function
+          const addNode = (node) => {
+              if (node.name === targetNode.name) {
+                  if (!node.children) node.children = [];
+                  node.children.push(draggedNode);
+                  return true;
+              }
+              return node.children && node.children.some(child => addNode(child));
+          };
+  
+          const nodeAdded = addNode(newData);
+          
+          if (!nodeAdded) {
+              console.error('Failed to add node to new position');
+              return;
+          }
+  
+          // Update the visual state
+          setData(newData);
+  
+          // Update the database
+          await updateEmployee(draggedNode.id, {
+              name: draggedNode.name,
+              title: draggedNode.title,
+              email: draggedNode.email,
+              manager_id: targetNode.id,
+              company_id: draggedNode.company_id
+          });
+  
+      } catch (error) {
+          console.error('Failed to update employee:', error);
+          // Optionally revert the visual change if the database update fails
+      }
+  }, [data, findAndRemoveNode, updateEmployee]);
 
     return (
         <DndProvider backend={HTML5Backend}>
-            <OrgChart tree={data} NodeComponent={(props) => <MyNodeComponent {...props} moveNode={moveNode} />} />
+            <OrgChart 
+                tree={data} 
+                NodeComponent={(props) => <MyNodeComponent {...props} moveNode={moveNode} />} 
+            />
         </DndProvider>
     );
 };

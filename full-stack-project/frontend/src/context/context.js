@@ -31,24 +31,25 @@ export const CompanyProvider = ({ children }) => {
         }
     };
 
-    // const fetchOrgChart = async (companyId) => {
-    //     setLoading(prev => ({ ...prev, orgChart: true }));
-    //     try {
-    //         const response = await apiService.getEmployeesByCompanyId(companyId);
-    //         console.log('fetchOrg', response);
-    //         setCompanyData(prev => ({
-    //             ...prev,
-    //             orgData: response.data
-    //         }));
-    //     } catch (error) {
-    //         console.error('Error fetching org chart:', error);
-    //     } finally {
-    //         setLoading(prev => ({ ...prev, orgChart: false }));
-    //     }
-    // };
+    // add function to update employee.manager_id in backend when node is moved in org chart
+    const updateEmployee = async (employeeId, data) => {
+      try {
+          // Use apiService.updateEmployee instead of apiService.put
+          const response = await apiService.updateEmployee(employeeId, data);
+          console.log('Employee updated successfully:', response);
+          
+          // Refresh employee data after successful update
+          await fetchEmployees(companyData.company_id);
+          
+          return response;
+      } catch (error) {
+          console.error('Error updating employee:', error);
+          throw error;
+      }
+  };
 
     return (
-        <CompanyContext.Provider value={{ companyData, fetchEmployees, loading }}>
+        <CompanyContext.Provider value={{ companyData, fetchEmployees, updateEmployee, loading }}>
             {children}
         </CompanyContext.Provider>
     );

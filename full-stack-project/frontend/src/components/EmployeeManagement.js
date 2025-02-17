@@ -37,6 +37,7 @@ const MyEmployeeManagement = () => {
         <tbody>
           {companyData.employeeData && companyData.employeeData.map(employee => (
             <tr key={employee.id}>
+              <td>{employee.id}</td>
               <td>{employee.name}</td>
               <td>{employee.title}</td>
               <td>{employee.manager_id}</td>

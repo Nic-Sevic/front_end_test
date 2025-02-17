@@ -2,4 +2,4 @@
 .venv
 venv
 app/hash_password_script.py
-../frontend/build/
+/frontend/build/

@@ -71,3 +71,17 @@ a:hover {
     width: 80%;
     text-align: center;
 }
+
+.chartNode {
+    transition: all 0.3s ease;
+    cursor: grab;
+}
+
+.chartNode.dragging {
+    cursor: grabbing;
+}
+
+.chartNode.drop-target {
+    border: 2px dashed #4a90e2;
+    background-color: rgba(74, 144, 226, 0.1);
+}
