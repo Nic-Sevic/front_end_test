@@ -6,6 +6,7 @@ const MyEmployeeManagement = () => {
   const { companyData, loading, fetchEmployees, updateEmployee, getPerformanceMetricsByEmployeeId, updateMetrics, addEmployee } = useCompany();
   const [editingEmployee, setEditingEmployee] = useState('');
   const [formData, setFormData] = useState({});
+  const [formDataNew, setFormDataNew] = useState({});
   const [editingMetricId, setEditingMetricId] = useState(null);
   const [metricFormData, setMetricFormData] = useState({});
   const [metricsData, setMetricsData] = useState([]);
@@ -55,15 +56,15 @@ const MyEmployeeManagement = () => {
   const handleAddEmployee = async () => {
     try {
       const newEmployee = {
-        name: formData.name,
-        email: formData.email,
-        title: formData.title,
-        manager_id: formData.manager_id,
+        name: formDataNew.name,
+        email: formDataNew.email,
+        title: formDataNew.title,
+        manager_id: formDataNew.manager_id,
         company_id: companyData.company_id
       };
       await addEmployee(newEmployee);
       await fetchEmployees(companyData.company_id);
-      setFormData({});
+      setFormDataNew({});
     } catch (error) {
       console.error('Error adding employee:', error);
     }
@@ -169,7 +170,42 @@ const MyEmployeeManagement = () => {
           ))}
         </tbody>
       </table>
-      <button onClick={handleAddEmployee}>Add Employee</button>
+      <div>
+                <input
+                    type="text"
+                    name="name"
+                    placeholder="Name"
+                    value={formDataNew.name || ''}
+                    onChange={(e) => setFormData({ ...formDataNew, name: e.target.value })}
+                />
+                <input
+                    type="text"
+                    name="email"
+                    placeholder="Email"
+                    value={formDataNew.email || ''}
+                    onChange={(e) => setFormData({ ...formDataNew, email: e.target.value })}
+                />
+                <input
+                    type="text"
+                    name="title"
+                    placeholder="Title"
+                    value={formDataNew.title || ''}
+                    onChange={(e) => setFormData({ ...formDataNew, title: e.target.value })}
+                />
+                <select
+                    name="manager_id"
+                    value={formDataNew.manager_id || ''}
+                    onChange={(e) => setFormData({ ...formDataNew, manager_id: e.target.value })}
+                >
+                    <option value="">Select Manager</option>
+                    {companyData.employeeData.map((emp) => (
+                        <option key={emp.id} value={emp.id}>
+                            {emp.id} - {emp.name}
+                        </option>
+                    ))}
+                </select>
+                <button onClick={handleAddEmployee}>Add Employee</button>
+            </div>
 
       {metricsData.length > 0 && (
           <div>
