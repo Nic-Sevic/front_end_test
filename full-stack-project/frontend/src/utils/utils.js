@@ -1,19 +1,14 @@
 const transformToHierarchy = (flatData) => {
-  // First, create a map of all employees by their ID
   const employeeMap = new Map();
+  const root = { children: [] };
 
-  // Assume each employee has an 'id' property. If not, we'll need to add it
+  // Create a map of employees
   flatData.forEach(employee => {
     employeeMap.set(employee.id, {
         ...employee,
         children: []
     });
   });
-
-  // Create the tree structure
-  const root = {
-      children: []
-  };
 
   // Connect employees based on manager_id
   flatData.forEach(employee => {

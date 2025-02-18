@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useCompany } from '../context/context';
 
 const MyEmployeeManagement = () => {
@@ -73,8 +73,7 @@ const MyEmployeeManagement = () => {
         email: formDataNew.email,
         title: formDataNew.title,
         manager_id: formDataNew.manager_id,
-        company_id: companyData.company_id,
-        status: 'active'
+        company_id: companyData.company_id
       };
       await addEmployee(newEmployee);
       await fetchEmployees(companyData.company_id);
@@ -108,6 +107,38 @@ const MyEmployeeManagement = () => {
     await fetchEmployees(companyData.company_id);
   };
 
+  const handleToggleStatus = async (employee) => {
+    console.log('Toggling status for employee:', employee);
+    try {
+      const updatedEmployee = employee.status === 'active' ? 'inactive' : 'active';
+      const updatedFormData = {...employee, status: updatedEmployee};
+      await updateEmployee(employee.id, updatedFormData);
+
+      if (updatedEmployee === 'inactive') {
+        const employees = await fetchEmployees(companyData.company_id);
+        console.log('Fetched employees:', employees); // Log the fetched employees
+
+        if (!Array.isArray(employees)) {
+          throw new Error('fetchEmployees did not return an array');
+        }
+
+        const employeesToUpdate = employees.filter(emp => emp.manager_id === employee.id);
+        console.log('Employees to update:', employeesToUpdate);
+
+        for (const emp of employeesToUpdate) {
+          const updatedEmpData = {...emp, manager_id: null};
+          console.log('Updating employee:', updatedEmpData);
+          await updateEmployee(emp.id, updatedEmpData);
+        }
+      }
+
+      await fetchEmployees(companyData.company_id);
+      setEditingEmployee('');
+    } catch (error) {
+      console.error('Error updating employee status:', error);
+    }
+  };
+
   // When the component mounts, fetch employee data if we have a company ID
   useEffect(() => {
     if (companyData.company_id) {
@@ -120,143 +151,130 @@ const MyEmployeeManagement = () => {
   }
 
   return (
-    <div className="container">
-      <div className="section">
-        <table>
-          <thead>
-            <tr>
-              <th>Employee ID</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Title</th>
-              <th>Manager ID</th>
-              <th>Status</th>
-              <th>Edit Employee</th>
-              <th>Performance Metrics</th>
+    <div>
+      <table>
+        <thead>
+          <tr>
+            <th>Employee ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Title</th>
+            <th>Manager ID</th>
+            <th>Performance Metrics</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {companyData.employeeData && companyData.employeeData.map((employee) => (
+            <tr key={employee.id}>
+              <td>{employee.id}</td>
+              <td>
+                {editingEmployee === employee.id ? (
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                  />
+                ) : (
+                  employee.name
+                )}
+              </td>
+              <td>
+                {editingEmployee === employee.id ? (
+                  <input
+                    type="text"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                  />
+                ) : (
+                  employee.email
+                )}
+              </td>
+              <td>
+                {editingEmployee === employee.id ? (
+                  <input
+                    type="text"
+                    name="title"
+                    value={formData.title}
+                    onChange={handleInputChange}
+                  />
+                ) : (
+                  employee.title
+                )}
+              </td>
+              <td>
+                {editingEmployee === employee.id ? (
+                  <select
+                    name="manager_id"
+                    value={formData.manager_id}
+                    onChange={handleInputChange}
+                  >
+                    <option value="">Select Manager</option>
+                    {companyData.employeeData
+                      .filter((emp) => emp.id !== employee.id)
+                      .map((emp) => (
+                        <option key={emp.id} value={emp.id}>
+                          {emp.id} - {emp.name}
+                        </option>
+                      ))}
+                  </select>
+                ) : (
+                  employee.manager_id
+                )}
+              </td>
+              <td><button onClick={() => viewMetrics(employee)}>View</button></td>
+              <td>
+                {editingEmployee === employee.id ? (
+                  <>
+                    <button onClick={handleSaveClick}>Save</button>
+                    <button onClick={() => setEditingEmployee(null)}>Cancel</button>
+                  </>
+                ) : (
+                  <button onClick={() => handleEditClick(employee)}>Edit</button>
+                )}
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {/* Employee Data Display */}
-            {companyData.employeeData && companyData.employeeData.map((employee) => (
-              <tr key={employee.id} className={employee.status}>
-                <td>{employee.id}</td>
-                <td>
-                  {editingEmployee === employee.id ? (
-                    <input
-                      type="text"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                    />
-                  ) : (
-                    employee.name
-                  )}
-                </td>
-                <td>
-                  {editingEmployee === employee.id ? (
-                    <input
-                      type="text"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                    />
-                  ) : (
-                    employee.email
-                  )}
-                </td>
-                <td>
-                  {editingEmployee === employee.id ? (
-                    <input
-                      type="text"
-                      name="title"
-                      value={formData.title}
-                      onChange={handleInputChange}
-                    />
-                  ) : (
-                    employee.title
-                  )}
-                </td>
-                <td>
-                  {editingEmployee === employee.id ? (
-                    <select
-                      name="manager_id"
-                      value={formData.manager_id}
-                      onChange={handleInputChange}
-                    >
-                      <option value="">Select Manager</option>
-                      {companyData.employeeData
-                        .filter((emp) => emp.id !== employee.id)
-                        .map((emp) => (
-                          <option key={emp.id} value={emp.id}>
-                            {emp.id} - {emp.name}
-                          </option>
-                        ))}
-                    </select>
-                  ) : (
-                    employee.manager_id
-                  )}
-                </td>
-                <td> 
-                    <button className={employee.status} onClick={() => updateStatus(employee)}>{employee.status}</button>
-                </td>
-
-                {/* Editing Employee Data */}
-                <td>
-                  {editingEmployee === employee.id ? (
-                    <>
-                      <button className={employee.status} onClick={handleSaveClick}>Save</button>
-                      <button className={employee.status} onClick={() => setEditingEmployee(null)}>Cancel</button>
-                    </>
-                  ) : (
-                    <button className={employee.status} onClick={() => handleEditClick(employee)}>Edit</button>
-                  )}
-                </td>
-
-                {/* Displaying Performance Metrics */}
-                <td><button className={employee.status} onClick={() => viewMetrics(employee)}>View</button></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Adding Employees */}
-      <div className="section add-employee">
-        <input
-          type="text"
-          name="name"
-          placeholder="Name"
-          value={formDataNew.name || ''}
-          onChange={(e) => setFormDataNew({ ...formDataNew, name: e.target.value })}
-        />
-        <input
-          type="text"
-          name="email"
-          placeholder="Email"
-          value={formDataNew.email || ''}
-          onChange={(e) => setFormDataNew({ ...formDataNew, email: e.target.value })}
-        />
-        <input
-          type="text"
-          name="title"
-          placeholder="Title"
-          value={formDataNew.title || ''}
-          onChange={(e) => setFormDataNew({ ...formDataNew, title: e.target.value })}
-        />
-        <select
-          name="manager_id"
-          value={formDataNew.manager_id || ''}
-          onChange={(e) => setFormDataNew({ ...formDataNew, manager_id: e.target.value })}
-        >
-          <option value="">Select Manager</option>
-          {companyData.employeeData.map((emp) => (
-            <option key={emp.id} value={emp.id}>
-              {emp.id} - {emp.name}
-            </option>
           ))}
-        </select>
-        <button onClick={handleAddEmployee}>Add Employee</button>
-      </div>
+        </tbody>
+      </table>
+      <div>
+                <input
+                    type="text"
+                    name="name"
+                    placeholder="Name"
+                    value={formDataNew.name || ''}
+                    onChange={(e) => setFormData({ ...formDataNew, name: e.target.value })}
+                />
+                <input
+                    type="text"
+                    name="email"
+                    placeholder="Email"
+                    value={formDataNew.email || ''}
+                    onChange={(e) => setFormData({ ...formDataNew, email: e.target.value })}
+                />
+                <input
+                    type="text"
+                    name="title"
+                    placeholder="Title"
+                    value={formDataNew.title || ''}
+                    onChange={(e) => setFormData({ ...formDataNew, title: e.target.value })}
+                />
+                <select
+                    name="manager_id"
+                    value={formDataNew.manager_id || ''}
+                    onChange={(e) => setFormData({ ...formDataNew, manager_id: e.target.value })}
+                >
+                    <option value="">Select Manager</option>
+                    {companyData.employeeData.map((emp) => (
+                        <option key={emp.id} value={emp.id}>
+                            {emp.id} - {emp.name}
+                        </option>
+                    ))}
+                </select>
+                <button onClick={handleAddEmployee}>Add Employee</button>
+            </div>
 
       {/* Editing Performance Metrics */}
       {metricsData.length > 0 && (
