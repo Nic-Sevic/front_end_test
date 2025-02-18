@@ -10,7 +10,7 @@ const App = () => {
         <CompanyProvider>
             <h1>Org chart</h1>
             <div id='orgChart'><MyOrgChart/></div>
-            <h1>Employee Management</h1>
+            <h1>Employee Management & Performance</h1>
             <div id='employeeManagement'><MyEmployeeManagement/></div>
         </CompanyProvider>
     );

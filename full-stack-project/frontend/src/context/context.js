@@ -19,7 +19,6 @@ export const CompanyProvider = ({ children }) => {
         setLoading(prev => ({ ...prev, employeeData: true }));
         try {
             const response = await apiService.getEmployeesByCompanyId(companyId);
-            console.log('fetchEmployees', response);
             setCompanyData(prev => ({
                 ...prev,
                 employeeData: response
@@ -36,7 +35,6 @@ export const CompanyProvider = ({ children }) => {
       try {
           // Use apiService.updateEmployee instead of apiService.put
           const response = await apiService.updateEmployee(employeeId, data);
-          console.log('Employee updated successfully:', response);
           
           // Refresh employee data after successful update
           await fetchEmployees(companyData.company_id);
@@ -48,11 +46,43 @@ export const CompanyProvider = ({ children }) => {
       }
   };
 
+  const getPerformanceMetricsByEmployeeId = async (employeeId) => {
+    try {
+        const response = await apiService.getPerformanceMetricsByEmployeeId(employeeId);
+        return response;
+    } catch (error) {
+        console.error('Error fetching performance metrics:', error);
+        throw error;
+    }
+};
+
+  const updateMetrics = async (data) => {
+    try {
+        const response = await apiService.addPerformanceMetric(data);
+        return response;
+    } catch (error) {
+        console.error('Error updating metrics:', error);
+        throw error;
+    }
+  };
+
+  const addEmployee = async (data) => {
+    try {
+        const response = await apiService.createEmployee(data);
+        return response;
+    } catch (error) {
+        console.error('Error adding employee:', error);
+        throw error;
+    }
+  };
+
     return (
-        <CompanyContext.Provider value={{ companyData, fetchEmployees, updateEmployee, loading }}>
+        <CompanyContext.Provider value={{ companyData, fetchEmployees, updateEmployee, getPerformanceMetricsByEmployeeId, updateMetrics, addEmployee, loading }}>
             {children}
         </CompanyContext.Provider>
     );
 };
+
+
 
 export const useCompany = () => useContext(CompanyContext);

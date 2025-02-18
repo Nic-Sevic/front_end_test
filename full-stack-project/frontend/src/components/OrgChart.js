@@ -8,7 +8,6 @@ import { useCompany } from '../context/context';
 const ItemType = 'NODE';
 
 const MyNodeComponent = ({ node, moveNode }) => {
-    console.log('Rendering node:', node);
 
     const [{ isDragging }, dragRef] = useDrag({
         type: ItemType,
@@ -47,11 +46,10 @@ const MyNodeComponent = ({ node, moveNode }) => {
 };
 
 const MyOrgChart = () => {
-    // Get both companyData and updateEmployee from context
-    const { companyData, updateEmployee } = useCompany();
+    const { companyData, updateEmployee, fetchEmployees, addEmployee } = useCompany();
     const [data, setData] = useState(() => transformToHierarchy(companyData.employeeData));
+    const [formData, setFormData] = useState({});
 
-    // Update the chart when companyData changes
     useEffect(() => {
         setData(transformToHierarchy(companyData.employeeData));
     }, [companyData]);
@@ -120,12 +118,65 @@ const MyOrgChart = () => {
       }
   }, [data, findAndRemoveNode, updateEmployee]);
 
+    const handleAddEmployee = async () => {
+        try {
+            const newEmployee = {
+                name: formData.name,
+                email: formData.email,
+                title: formData.title,
+                manager_id: formData.manager_id,
+                company_id: companyData.company_id
+            };
+            await addEmployee(newEmployee);
+            await fetchEmployees(companyData.company_id);
+            setFormData({});
+        } catch (error) {
+            console.error('Error adding employee:', error);
+        }
+    };
+
     return (
         <DndProvider backend={HTML5Backend}>
             <OrgChart 
                 tree={data} 
                 NodeComponent={(props) => <MyNodeComponent {...props} moveNode={moveNode} />} 
             />
+            <div>
+                <input
+                    type="text"
+                    name="name"
+                    placeholder="Name"
+                    value={formData.name || ''}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                />
+                <input
+                    type="text"
+                    name="email"
+                    placeholder="Email"
+                    value={formData.email || ''}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                />
+                <input
+                    type="text"
+                    name="title"
+                    placeholder="Title"
+                    value={formData.title || ''}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                />
+                <select
+                    name="manager_id"
+                    value={formData.manager_id || ''}
+                    onChange={(e) => setFormData({ ...formData, manager_id: e.target.value })}
+                >
+                    <option value="">Select Manager</option>
+                    {companyData.employeeData.map((emp) => (
+                        <option key={emp.id} value={emp.id}>
+                            {emp.id} - {emp.name}
+                        </option>
+                    ))}
+                </select>
+                <button onClick={handleAddEmployee}>Add Employee</button>
+            </div>
         </DndProvider>
     );
 };
