@@ -67,6 +67,7 @@ const MyEmployeeManagement = () => {
       setFormDataNew({});
     } catch (error) {
       console.error('Error adding employee:', error);
+      alert('Error adding employee. Please try again and make sure employee does not already exist.');
     }
   };
 
@@ -176,26 +177,26 @@ const MyEmployeeManagement = () => {
                     name="name"
                     placeholder="Name"
                     value={formDataNew.name || ''}
-                    onChange={(e) => setFormData({ ...formDataNew, name: e.target.value })}
+                    onChange={(e) => setFormDataNew({ ...formDataNew, name: e.target.value })}
                 />
                 <input
                     type="text"
                     name="email"
                     placeholder="Email"
                     value={formDataNew.email || ''}
-                    onChange={(e) => setFormData({ ...formDataNew, email: e.target.value })}
+                    onChange={(e) => setFormDataNew({ ...formDataNew, email: e.target.value })}
                 />
                 <input
                     type="text"
                     name="title"
                     placeholder="Title"
                     value={formDataNew.title || ''}
-                    onChange={(e) => setFormData({ ...formDataNew, title: e.target.value })}
+                    onChange={(e) => setFormDataNew({ ...formDataNew, title: e.target.value })}
                 />
                 <select
                     name="manager_id"
                     value={formDataNew.manager_id || ''}
-                    onChange={(e) => setFormData({ ...formDataNew, manager_id: e.target.value })}
+                    onChange={(e) => setFormDataNew({ ...formDataNew, manager_id: e.target.value })}
                 >
                     <option value="">Select Manager</option>
                     {companyData.employeeData.map((emp) => (

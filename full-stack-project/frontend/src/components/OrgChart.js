@@ -132,6 +132,7 @@ const MyOrgChart = () => {
             setFormData({});
         } catch (error) {
             console.error('Error adding employee:', error);
+            alert('Error adding employee. Please try again and make sure employee does not already exist.');
         }
     };
 
