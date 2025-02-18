@@ -4,7 +4,7 @@ const transformToHierarchy = (flatData) => {
 
   // Assume each employee has an 'id' property. If not, we'll need to add it
   flatData.forEach(employee => {
-      employeeMap.set(employee.id || employee.email, {
+      employeeMap.set(employee.id, {
           ...employee,
           children: []
       });
@@ -17,7 +17,7 @@ const transformToHierarchy = (flatData) => {
 
   // Connect employees based on manager_id
   flatData.forEach(employee => {
-      const employeeNode = employeeMap.get(employee.id || employee.email);
+      const employeeNode = employeeMap.get(employee.id);
       if (employee.manager_id === null) {
           // This is a root level employee
           root.children.push(employeeNode);
@@ -30,7 +30,8 @@ const transformToHierarchy = (flatData) => {
           }
       }
   });
-
-  // If there's only one root level employee, return that as the root
-  return root.children.length === 1 ? root.children[0] : root;
+  
+    return root;
 };
+
+export default transformToHierarchy;

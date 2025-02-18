@@ -4,10 +4,12 @@ import 'react-orgchart/index.css';
 import { useDrag, useDrop, DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useCompany } from '../context/context';
+import transformToHierarchy from '../utils/utils';
 
 const ItemType = 'NODE';
 
 const MyNodeComponent = ({ node, moveNode }) => {
+  const { companyData } = useCompany();
 
     const [{ isDragging }, dragRef] = useDrag({
         type: ItemType,
@@ -31,6 +33,8 @@ const MyNodeComponent = ({ node, moveNode }) => {
         dropRef(el);
     };
 
+    console.log('Node:', companyData);
+
     return (
         <div 
             ref={ref} 
@@ -38,7 +42,7 @@ const MyNodeComponent = ({ node, moveNode }) => {
             style={{ opacity: isDragging ? 0.5 : 1 }}
         >
             <div>
-                <div className="name">{node.name}</div>
+                <div className="name">{node.name === undefined ? companyData.company_name : node.name}</div>
                 <div className="title">{node.title}</div>
             </div>
         </div>
@@ -180,43 +184,6 @@ const MyOrgChart = () => {
             </div>
         </DndProvider>
     );
-};
-
-const transformToHierarchy = (flatData) => {
-    // First, create a map of all employees by their ID
-    const employeeMap = new Map();
-
-    // Assume each employee has an 'id' property. If not, we'll need to add it
-    flatData.forEach(employee => {
-        employeeMap.set(employee.id || employee.email, {
-            ...employee,
-            children: []
-        });
-    });
-
-    // Create the tree structure
-    const root = {
-        children: []
-    };
-
-    // Connect employees based on manager_id
-    flatData.forEach(employee => {
-        const employeeNode = employeeMap.get(employee.id || employee.email);
-        if (employee.manager_id === null) {
-            // This is a root level employee
-            root.children.push(employeeNode);
-        } else {
-            // Find the manager and add this employee as their child
-            const managerNode = employeeMap.get(employee.manager_id);
-            if (managerNode) {
-                if (!managerNode.children) managerNode.children = [];
-                managerNode.children.push(employeeNode);
-            }
-        }
-    });
-
-    // If there's only one root level employee, return that as the root
-    return root.children.length === 1 ? root.children[0] : root;
 };
 
 export default MyOrgChart;

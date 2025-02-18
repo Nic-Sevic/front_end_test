@@ -5,7 +5,8 @@ const CompanyContext = createContext(null);
 
 export const CompanyProvider = ({ children }) => {
     const [companyData, setCompanyData] = useState({
-        company_id: 1,
+        company_id: 1, // TODO currently hardcoded but should be replaced by login
+        company_name: 'Test Company', // TODO currently hardcoded but should be replaced by login
         employeeData: [],
         orgData: []
     });
