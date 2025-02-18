@@ -25,7 +25,7 @@ class Employee(Base):
 	manager_id: Mapped[int] = mapped_column(Integer, ForeignKey("employees.id", ondelete="SET NULL"), nullable=True)
 	created_at: Mapped[TIMESTAMP] = mapped_column(TIMESTAMP, server_default=func.now(), nullable=False)
 	updated_at: Mapped[TIMESTAMP] = mapped_column(TIMESTAMP, server_default=func.now(), nullable=False)
-	status: Mapped[str] = mapped_column(String, nullable=False, server_default="active")
+	status: Mapped[str] = mapped_column(String, default="active")
 
 	# Relationships
 	company = relationship("Company", back_populates="employees")

@@ -24,7 +24,7 @@ class EmployeeBase(BaseModel):
     email: EmailStr
     manager_id: Optional[int] = None
     company_id: int
-    status: str
+    status: str = "active"
 
 class EmployeeCreate(EmployeeBase):
     pass

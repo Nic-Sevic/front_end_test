@@ -28,7 +28,7 @@ CREATE TABLE employees (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (company_id) REFERENCES companies(id),
     FOREIGN KEY (manager_id) REFERENCES employees(id),
-    status TEXT DEFAULT 'active';
+    status TEXT CHECK (status IN ('active', 'inactive')) DEFAULT 'active'
 );
 
 -- Performance ratings table
