@@ -86,15 +86,25 @@ const MyEmployeeManagement = () => {
   };
 
   const updateStatus = async (employee) => {
-    console.log('Updating status for employee:', editingEmployee);
+    const removeManager = companyData.employeeData.filter(emp => emp.manager_id === employee.id);
+    const updatedStatus = employee.status === 'active' ? 'inactive' : 'active';
+    const updatedEmployee = { ...employee, status: updatedStatus };
+
     try {
-      const updatedStatus = employee.status === 'active' ? 'inactive' : 'active';
-      const updatedEmployee = { ...employee, status: updatedStatus };
       await updateEmployee(employee.id, updatedEmployee);
     }
     catch (error) {
       console.error('Error updating status:', error);
+      return;
     }
+
+    if (updatedStatus === 'inactive') {
+      for (const emp of removeManager) {
+        emp.manager_id = null;
+        await updateEmployee(emp.id, emp);
+      }
+    }
+
     await fetchEmployees(companyData.company_id);
   };
 
@@ -128,7 +138,7 @@ const MyEmployeeManagement = () => {
           <tbody>
             {/* Employee Data Display */}
             {companyData.employeeData && companyData.employeeData.map((employee) => (
-              <tr key={employee.id}>
+              <tr key={employee.id} className={employee.status}>
                 <td>{employee.id}</td>
                 <td>
                   {editingEmployee === employee.id ? (
@@ -187,23 +197,23 @@ const MyEmployeeManagement = () => {
                   )}
                 </td>
                 <td> 
-                    <button onClick={() => updateStatus(employee)}>{employee.status}</button>
+                    <button className={employee.status} onClick={() => updateStatus(employee)}>{employee.status}</button>
                 </td>
 
                 {/* Editing Employee Data */}
                 <td>
                   {editingEmployee === employee.id ? (
                     <>
-                      <button onClick={handleSaveClick}>Save</button>
-                      <button onClick={() => setEditingEmployee(null)}>Cancel</button>
+                      <button className={employee.status} onClick={handleSaveClick}>Save</button>
+                      <button className={employee.status} onClick={() => setEditingEmployee(null)}>Cancel</button>
                     </>
                   ) : (
-                    <button onClick={() => handleEditClick(employee)}>Edit</button>
+                    <button className={employee.status} onClick={() => handleEditClick(employee)}>Edit</button>
                   )}
                 </td>
 
                 {/* Displaying Performance Metrics */}
-                <td><button onClick={() => viewMetrics(employee)}>View</button></td>
+                <td><button className={employee.status} onClick={() => viewMetrics(employee)}>View</button></td>
               </tr>
             ))}
           </tbody>
@@ -302,11 +312,11 @@ const MyEmployeeManagement = () => {
                   <td>
                     {editingMetricId === metric.id ? (
                       <>
-                        <button onClick={() => handleSaveMetrics(metric.employee_id, metricFormData)}>Save</button>
-                        <button onClick={() => setEditingMetricId(null)}>Cancel</button>
+                        <button  onClick={() => handleSaveMetrics(metric.employee_id, metricFormData)}>Save</button>
+                        <button  onClick={() => setEditingMetricId(null)}>Cancel</button>
                       </>
                     ) : (
-                      <button onClick={() => {
+                      <button  onClick={() => {
                         setEditingMetricId(metric.id);
                         setMetricFormData({
                           category: metric.category,

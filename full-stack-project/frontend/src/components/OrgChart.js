@@ -52,9 +52,15 @@ const MyOrgChart = () => {
     const [data, setData] = useState(() => transformToHierarchy(companyData.employeeData));
     const [formData, setFormData] = useState({});
 
+    // useEffect(() => {
+    //     setData(transformToHierarchy(companyData.employeeData));
+    // }, [companyData]);
+
+    // clean up inactive employees from companyData.employeeData
     useEffect(() => {
-        setData(transformToHierarchy(companyData.employeeData));
-    }, [companyData]);
+        const activeEmployees = companyData.employeeData.filter(employee => employee.status === 'active');
+        setData(transformToHierarchy(activeEmployees));
+    }, [companyData.employeeData]);
 
     const findAndRemoveNode = useCallback((node, targetNode) => {
         if (!node.children) return false;
@@ -111,7 +117,8 @@ const MyOrgChart = () => {
               title: draggedNode.title,
               email: draggedNode.email,
               manager_id: targetNode.id,
-              company_id: draggedNode.company_id
+              company_id: draggedNode.company_id,
+              status: draggedNode.status
           });
   
       } catch (error) {

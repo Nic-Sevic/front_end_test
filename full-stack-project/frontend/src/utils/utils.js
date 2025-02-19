@@ -4,10 +4,10 @@ const transformToHierarchy = (flatData) => {
 
   // Assume each employee has an 'id' property. If not, we'll need to add it
   flatData.forEach(employee => {
-      employeeMap.set(employee.id, {
-          ...employee,
-          children: []
-      });
+    employeeMap.set(employee.id, {
+        ...employee,
+        children: []
+    });
   });
 
   // Create the tree structure
