@@ -8,7 +8,7 @@ const MyEmployeeManagement = () => {
   const [formDataNew, setFormDataNew] = useState({});
   const [editingMetricId, setEditingMetricId] = useState(null);
   const [metricFormData, setMetricFormData] = useState({});
-  const [metricFormDataNew, setMetricFormDataNew] = useState({category: "", rating: null, employee_id: null});
+  const [metricFormDataNew, setMetricFormDataNew] = useState({ category: "", rating: null, employee_id: null });
   const [metricsData, setMetricsData] = useState([]);
   const [metricsEmployee, setMetricsEmployee] = useState(null);
 
@@ -40,7 +40,7 @@ const MyEmployeeManagement = () => {
       setMetricsData(metrics);
     } catch (error) {
       console.error('Error fetching performance metrics:', error);
-      setMetricsData([{category: 'None Yet', rating: 'None Yet', updated_at: 'None Yet', id: ''}]); 
+      setMetricsData([{ category: 'None Yet', rating: 'None Yet', updated_at: 'None Yet', id: '' }]);
     }
   };
 
@@ -52,7 +52,7 @@ const MyEmployeeManagement = () => {
   const handleAddMetric = async (employeeID) => {
     const updatedMetricFormDataNew = { ...metricFormDataNew, employee_id: employeeID };
     await handleSaveMetrics(employeeID, updatedMetricFormDataNew);
-    setMetricFormDataNew({category: "", rating: null, employee_id: null}); // Reset after successful update
+    setMetricFormDataNew({ category: "", rating: null, employee_id: null }); // Reset after successful update
   };
 
   const handleSaveMetrics = async (employeeID, metricToUpdate) => {
@@ -73,7 +73,8 @@ const MyEmployeeManagement = () => {
         email: formDataNew.email,
         title: formDataNew.title,
         manager_id: formDataNew.manager_id,
-        company_id: companyData.company_id
+        company_id: companyData.company_id,
+        status: 'active'
       };
       await addEmployee(newEmployee);
       await fetchEmployees(companyData.company_id);
@@ -82,6 +83,19 @@ const MyEmployeeManagement = () => {
       console.error('Error adding employee:', error);
       alert('Error adding employee. Please try again and make sure employee does not already exist.');
     }
+  };
+
+  const updateStatus = async (employee) => {
+    console.log('Updating status for employee:', editingEmployee);
+    try {
+      const updatedStatus = employee.status === 'active' ? 'inactive' : 'active';
+      const updatedEmployee = { ...employee, status: updatedStatus };
+      await updateEmployee(employee.id, updatedEmployee);
+    }
+    catch (error) {
+      console.error('Error updating status:', error);
+    }
+    await fetchEmployees(companyData.company_id);
   };
 
   // When the component mounts, fetch employee data if we have a company ID
@@ -96,104 +110,108 @@ const MyEmployeeManagement = () => {
   }
 
   return (
-    <div>
-      <table>
-        <thead>
-          <tr>
-            <th>Employee ID</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Title</th>
-            <th>Manager ID</th>
-            <th>Edit Employee</th>
-            <th>Performance Metrics</th>
-          </tr>
-        </thead>
-        <tbody>
-          {/* Employee Data Display */}
-          {companyData.employeeData && companyData.employeeData.map((employee) => (
-            <tr key={employee.id}>
-              <td>{employee.id}</td>
-              <td>
-                {editingEmployee === employee.id ? (
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                  />
-                ) : (
-                  employee.name
-                )}
-              </td>
-              <td>
-                {editingEmployee === employee.id ? (
-                  <input
-                    type="text"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                  />
-                ) : (
-                  employee.email
-                )}
-              </td>
-              <td>
-                {editingEmployee === employee.id ? (
-                  <input
-                    type="text"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleInputChange}
-                  />
-                ) : (
-                  employee.title
-                )}
-              </td>
-              <td>
-                {editingEmployee === employee.id ? (
-                  <select
-                    name="manager_id"
-                    value={formData.manager_id}
-                    onChange={handleInputChange}
-                  >
-                    <option value="">Select Manager</option>
-                    {companyData.employeeData
-                      .filter((emp) => emp.id !== employee.id)
-                      .map((emp) => (
-                        <option key={emp.id} value={emp.id}>
-                          {emp.id} - {emp.name}
-                        </option>
-                      ))}
-                  </select>
-                ) : (
-                  employee.manager_id
-                )}
-              </td>
-              
-              {/* Editing Employee Data */}
-              <td>
-                {editingEmployee === employee.id ? (
-                  <>
-                    <button onClick={handleSaveClick}>Save</button>
-                    <button onClick={() => setEditingEmployee(null)}>Cancel</button>
-                  </>
-                ) : (
-                  <button onClick={() => handleEditClick(employee)}>Edit</button>
-                )}
-              </td>
-              
-              {/* Displaying Performance Metrics */}
-              <td><button onClick={() => viewMetrics(employee)}>View</button></td>
-
-
+    <div className="container">
+      <div className="section">
+        <table>
+          <thead>
+            <tr>
+              <th>Employee ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Title</th>
+              <th>Manager ID</th>
+              <th>Status</th>
+              <th>Edit Employee</th>
+              <th>Performance Metrics</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {/* Employee Data Display */}
+            {companyData.employeeData && companyData.employeeData.map((employee) => (
+              <tr key={employee.id}>
+                <td>{employee.id}</td>
+                <td>
+                  {editingEmployee === employee.id ? (
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                    />
+                  ) : (
+                    employee.name
+                  )}
+                </td>
+                <td>
+                  {editingEmployee === employee.id ? (
+                    <input
+                      type="text"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                    />
+                  ) : (
+                    employee.email
+                  )}
+                </td>
+                <td>
+                  {editingEmployee === employee.id ? (
+                    <input
+                      type="text"
+                      name="title"
+                      value={formData.title}
+                      onChange={handleInputChange}
+                    />
+                  ) : (
+                    employee.title
+                  )}
+                </td>
+                <td>
+                  {editingEmployee === employee.id ? (
+                    <select
+                      name="manager_id"
+                      value={formData.manager_id}
+                      onChange={handleInputChange}
+                    >
+                      <option value="">Select Manager</option>
+                      {companyData.employeeData
+                        .filter((emp) => emp.id !== employee.id)
+                        .map((emp) => (
+                          <option key={emp.id} value={emp.id}>
+                            {emp.id} - {emp.name}
+                          </option>
+                        ))}
+                    </select>
+                  ) : (
+                    employee.manager_id
+                  )}
+                </td>
+                <td> 
+                    <button onClick={() => updateStatus(employee)}>{employee.status}</button>
+                </td>
+
+                {/* Editing Employee Data */}
+                <td>
+                  {editingEmployee === employee.id ? (
+                    <>
+                      <button onClick={handleSaveClick}>Save</button>
+                      <button onClick={() => setEditingEmployee(null)}>Cancel</button>
+                    </>
+                  ) : (
+                    <button onClick={() => handleEditClick(employee)}>Edit</button>
+                  )}
+                </td>
+
+                {/* Displaying Performance Metrics */}
+                <td><button onClick={() => viewMetrics(employee)}>View</button></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {/* Adding Employees */}
-      <div>
+      <div className="section add-employee">
         <input
           type="text"
           name="name"
@@ -232,7 +250,7 @@ const MyEmployeeManagement = () => {
 
       {/* Editing Performance Metrics */}
       {metricsData.length > 0 && (
-        <div>
+        <div className="section">
           <h2>Performance Metrics for {getEmployeeNameById(metricsEmployee.id)}</h2>
           <table>
             <thead>
@@ -302,7 +320,7 @@ const MyEmployeeManagement = () => {
               ))}
             </tbody>
           </table>
-          <div>
+          <div className="add-metric">
             <input
               type="text"
               name="category"
@@ -318,14 +336,11 @@ const MyEmployeeManagement = () => {
               onChange={(e) => setMetricFormDataNew({ ...metricFormDataNew, rating: e.target.value })}
             />
             <button onClick={() => handleAddMetric(metricsEmployee.id)}>Add Metric</button>
-            </div>
+          </div>
         </div>
       )}
-
     </div>
   );
 };
-
-
 
 export default MyEmployeeManagement;
