@@ -33,8 +33,6 @@ const MyNodeComponent = ({ node, moveNode }) => {
         dropRef(el);
     };
 
-    console.log('Node:', companyData);
-
     return (
         <div 
             ref={ref} 
