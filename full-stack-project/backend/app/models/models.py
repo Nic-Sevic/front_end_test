@@ -1,6 +1,7 @@
 from sqlalchemy import Integer, String, ForeignKey, TIMESTAMP, func
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from ..database import Base
+import bcrypt
 
 class Company(Base):
 	__tablename__ = "companies"
@@ -52,6 +53,7 @@ class User(Base):
 	email: Mapped[str] = mapped_column(String, unique=True, index=True)
 	password_hash: Mapped[str] = mapped_column(String)
 	created_at: Mapped[TIMESTAMP] = mapped_column(TIMESTAMP, server_default=func.now(), nullable=False)
+	salt: Mapped[str] = mapped_column(String, default=bcrypt.gensalt())
 
 	# Relationships
 	company = relationship("Company", back_populates="users")

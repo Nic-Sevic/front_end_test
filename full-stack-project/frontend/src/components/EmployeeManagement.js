@@ -113,7 +113,7 @@ const MyEmployeeManagement = () => {
     if (companyData.company_id) {
       fetchEmployees(companyData.company_id);
     }
-  }, [companyData.company_id]); // Only re-run the effect if company_id changes
+  }, [companyData.company_id, fetchEmployees]); // Only re-run the effect if company_id changes
 
   if (loading.employeeData) {
     return <div>Loading employees...</div>;

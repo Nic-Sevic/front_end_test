@@ -66,6 +66,7 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str
+    salt: str
 
 class User(UserBase):
     id: int

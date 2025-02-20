@@ -5,8 +5,8 @@ const CompanyContext = createContext(null);
 
 export const CompanyProvider = ({ children }) => {
     const [companyData, setCompanyData] = useState({
-        company_id: 1, // TODO currently hardcoded but should be replaced by login
-        company_name: 'Test Company', // TODO currently hardcoded but should be replaced by login
+        company_id: null,
+        company_name: '',
         employeeData: [],
         orgData: []
     });
@@ -77,13 +77,21 @@ export const CompanyProvider = ({ children }) => {
     }
   };
 
+  const login = async (credentials) => {
+    try {
+        const response = await apiService.login(credentials);
+        return response;
+    } catch (error) {
+        console.error('Error logging in:', error);
+        throw error;
+    }
+  }
+
     return (
-        <CompanyContext.Provider value={{ companyData, fetchEmployees, updateEmployee, getPerformanceMetricsByEmployeeId, updateMetrics, addEmployee, loading }}>
+        <CompanyContext.Provider value={{ companyData, fetchEmployees, updateEmployee, getPerformanceMetricsByEmployeeId, updateMetrics, addEmployee, login, setCompanyData, loading }}>
             {children}
         </CompanyContext.Provider>
     );
 };
-
-
 
 export const useCompany = () => useContext(CompanyContext);
