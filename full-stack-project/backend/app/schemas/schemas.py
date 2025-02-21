@@ -24,6 +24,7 @@ class EmployeeBase(BaseModel):
     email: EmailStr
     manager_id: Optional[int] = None
     company_id: int
+    status: str
 
 class EmployeeCreate(EmployeeBase):
     pass
@@ -64,7 +65,8 @@ class UserBase(BaseModel):
     company_id: int
 
 class UserCreate(UserBase):
-    password: str
+    password_hash: str
+    salt: str
 
 class User(UserBase):
     id: int

@@ -4,6 +4,9 @@ from typing import List, Optional
 from ..database import get_db
 from ..models import models
 from ..schemas import schemas
+import bcrypt
+import urllib.parse
+import jwt
 
 router = APIRouter()
 
@@ -120,5 +123,54 @@ def add_performance_metric(performance_metric: schemas.PerformanceMetricCreate, 
         db.refresh(db_performance_metric)
         return db_performance_metric
 
+# GET for user login
+# @router.get("/login", response_model=schemas.User)
+# def login(email: str, password: str, db: Session = Depends(get_db)):
+#     decoded_email = urllib.parse.unquote(email)
+#     user = db.query(models.User).filter(models.User.email == decoded_email).first()
+#     print('USER', user)
+#     if not user:
+#         raise HTTPException(status_code=404, detail="User not found")
+
+#     # Decode the URL-encoded password
+#     decoded_password = urllib.parse.unquote(password)
+#     print('DECODED', decoded_password)
+#     password_check = db.query(models.User).filter(models.User.email == email, models.User.password_hash == decoded_password).first()
+#     print('CHECK', password_check)
+
+#     # Check the password
+#     if not password_check:
+#         raise HTTPException(status_code=401, detail="Invalid password")
+
+#     return user
+@router.get("/login", response_model=schemas.User)
+def login(email: str, password: str, db: Session = Depends(get_db)):
+    decoded_email = urllib.parse.unquote(email)
+    user = db.query(models.User).filter(models.User.email == decoded_email).first()
+    print('USER', user)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Decode the URL-encoded password
+    decoded_password = urllib.parse.unquote(password)
+    print('DECODED', decoded_password)
+    print('HASH', user.password_hash)
+
+    # Compare the hashed password provided by the user with the hashed password stored in the database
+    if user.password_hash != decoded_password:
+        raise HTTPException(status_code=401, detail="Invalid password")
+
+# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+# @router.get("/check_auth")
+# def check_auth(token: str, db: Session = Depends(get_db)):
+#     decoded_token = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+#     user_id = decoded_token.get("sub")
+#     user = db.query(models.User).filter(models.User.id == user_id).first()
+#     if not user:
+#         raise HTTPException(status_code=404, detail="User not found")   
+#         # End session and return to login page
 
 
+
+    return user

@@ -85,7 +85,8 @@ export const apiService = {
   updateEmployee: (id, data) => api.put(`/employees/${id}`, data),
   getPerformanceMetricsByEmployeeId: (id) => api.get(`/employees/${id}/performance_metrics`),
   getPerformanceMetricsByCompanyId: (id) => api.get(`/companies/${id}/performance_metrics`),
-  addPerformanceMetric: (data) => api.post('/performance_metrics', data)
+  addPerformanceMetric: (data) => api.post('/performance_metrics', data),
+  login: (credentials) => api.get('/login?email=' + credentials.email + '&password=' + credentials.password)
 };
 
 export default api;
