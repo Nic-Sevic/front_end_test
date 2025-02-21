@@ -3,3 +3,6 @@
 venv
 app/hash_password_script.py
 /frontend/build/
+node_modules/
+package-lock.json
+hashed_password_setting.py

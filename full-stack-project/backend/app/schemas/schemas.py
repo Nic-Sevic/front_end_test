@@ -65,7 +65,7 @@ class UserBase(BaseModel):
     company_id: int
 
 class UserCreate(UserBase):
-    password: str
+    password_hash: str
     salt: str
 
 class User(UserBase):

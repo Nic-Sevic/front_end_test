@@ -6,6 +6,7 @@ from ..models import models
 from ..schemas import schemas
 import bcrypt
 import urllib.parse
+import jwt
 
 router = APIRouter()
 
@@ -158,5 +159,18 @@ def login(email: str, password: str, db: Session = Depends(get_db)):
     # Compare the hashed password provided by the user with the hashed password stored in the database
     if user.password_hash != decoded_password:
         raise HTTPException(status_code=401, detail="Invalid password")
+
+# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+# @router.get("/check_auth")
+# def check_auth(token: str, db: Session = Depends(get_db)):
+#     decoded_token = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+#     user_id = decoded_token.get("sub")
+#     user = db.query(models.User).filter(models.User.id == user_id).first()
+#     if not user:
+#         raise HTTPException(status_code=404, detail="User not found")   
+#         # End session and return to login page
+
+
 
     return user
