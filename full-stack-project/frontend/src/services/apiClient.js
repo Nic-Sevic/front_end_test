@@ -5,6 +5,7 @@ const api = axios.create({
     headers: {
         'Content-Type': 'application/json'
     },
+    withCredentials: true,
     timeout: 5000
 });
 
@@ -62,7 +63,7 @@ api.interceptors.response.use(
       
       return Promise.reject(error);
   }
-);
+); 
 
 // API methods
 export const apiService = {
@@ -73,8 +74,21 @@ export const apiService = {
   // // User endpoints - TODO, do I need these?
   // getCurrentUser: () => api.get('/user'),
   // updateProfile: (data) => api.put('/user/profile', data),
+
+  // Auth Endpoints
+  getToken: (email, password) => {
+    const data = new URLSearchParams();
+    data.append('username', email);
+    data.append('password', password);
+    return api.post('/token', data, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      }
+    });
+  },
+  protected: () => api.get('/protected'),
   
-  // Example resource endpoints
+  // Resource Endpoints
   getEmployees: () => api.get('/employees'),
   createEmployee: (data) => api.post('/employees', data),
   getCompanyById: (id) => api.get(`/companies/${id}`),

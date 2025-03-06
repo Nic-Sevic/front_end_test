@@ -99,8 +99,20 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+  const getToken = async (email, password) => {
+    try {
+      console.log('Getting token for', email, password
+      );
+        const response = await apiService.getToken(email, password);
+        return response;
+    } catch (error) {
+        console.error('Error getting token:', error);
+        throw error;
+    } 
+    }
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
+    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, getToken }}>
       {children}
     </AuthContext.Provider>
   );

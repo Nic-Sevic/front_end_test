@@ -3,28 +3,23 @@ import axios from 'axios';
 import { useCompany, useAuth } from '../context/context';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const { setCompanyData } = useCompany();
-  const { setIsAuthenticated } = useAuth();
+  const [email, setEmail] = useState('test@example.com'); // TODO remove these default values
+  const [password, setPassword] = useState('password');
+  const { setCompanyData, companyData } = useCompany();
+  const { setIsAuthenticated, getToken, isAuthenticated } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:8000/token', { //TODO change this to be with the rest of the routes in apiClient
-        username: email,
-        password: password,
-      }, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        withCredentials: true, // This is important to include the HttpOnly cookie
-      });
+      console.log('Logging in with', email, password);
+      const response = await getToken(email, password);
+      
       setCompanyData(prev => ({
         ...prev,
-        company_id: response.data.company_id,
-        company_name: response.data.company_name
+        company_id: response.company_id,
+        company_name: response.company_name
       }));
+      console.log(companyData); 
       setIsAuthenticated(true);
     } catch (error) {
       console.error('Login failed', error);

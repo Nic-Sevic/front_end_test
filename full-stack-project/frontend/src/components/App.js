@@ -25,6 +25,7 @@ const App = () => {
   const { isAuthenticated, setIsAuthenticated } = useAuth();
 
   useEffect(() => {
+    console.log("Checking authentication status");
     const getProtectedData = async () => {
       try {
         const response = await axios.get("http://localhost:8000/protected", { withCredentials: true });
@@ -35,12 +36,14 @@ const App = () => {
         }
       } catch (error) {
         setIsAuthenticated(false);
-        console.error("Access denied", error.response.data);
+        console.error("Access denied", error.response);
       }
     };
 
     getProtectedData();
-  }, [setIsAuthenticated]);
+    console.log(isAuthenticated);
+  }, [ setIsAuthenticated ]);
+  
 
   return (
     <CompanyProvider>
@@ -49,8 +52,10 @@ const App = () => {
   );
 };
 
-export default () => (
+const RootComponent = () => (
   <AuthProvider>
     <App />
   </AuthProvider>
 );
+
+export default RootComponent;

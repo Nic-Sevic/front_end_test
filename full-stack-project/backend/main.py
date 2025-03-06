@@ -79,13 +79,13 @@ def authenticate_user(db: Session, username: str, password: str):
 
 # TODO move this to routes.py
 @app.post("/token") 
-async def login_for_access_token(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    print("form_data", form_data)
-    print("form_data.username", form_data.username)
-    print("form_data.password", form_data.password)
-    print(Response)
+async def login_for_access_token(response: Response, form_data: 
+    OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    print("REQUESTING TOKEN")
+    print("FORM DATA", form_data.username, form_data.password)
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
+        print("USER NOT FOUND")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
@@ -95,10 +95,9 @@ async def login_for_access_token(response: Response, form_data: OAuth2PasswordRe
     access_token = create_access_token(
         data={"sub": user.email}, expires_delta=access_token_expires
     )
+    print("TOKEN CREATED", access_token)
     response.set_cookie(key="access_token", value=access_token, httponly=True, secure=True, samesite="Lax")
     return {"company_id": user.company_id, "company_name": db.query(models.Company).filter(models.Company.id == user.company_id).first().name}
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 def get_current_user(request: Request):
     token = request.cookies.get("access_token")
@@ -108,11 +107,15 @@ def get_current_user(request: Request):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username = payload.get("sub")
+        print ("USERNAME", username)
         if username is None:
-            raise HTTPException(status_code=401, detail="Invalid token")
+            raise HTTPException(status_code=401, detail="user is none Invalid token")
+        print("TOKEN", token)
         return username
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
+
+   
 
 @app.get("/protected")
 def protected_route(user: str = Depends(get_current_user)):
