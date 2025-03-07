@@ -87,6 +87,9 @@ export const apiService = {
     });
   },
   protected: () => api.get('/protected'),
+  logout: () => {
+    return api.post('/logout');
+  },
   
   // Resource Endpoints
   getEmployees: () => api.get('/employees'),

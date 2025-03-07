@@ -5,6 +5,7 @@ import Login from './Login';
 import { CompanyProvider } from '../context/context';
 import { AuthProvider, useAuth } from '../context/context';
 import axios from 'axios';
+import api from '../services/apiClient';
 
 const LoggedInApp = () => (
   <div>
@@ -43,11 +44,28 @@ const App = () => {
     getProtectedData();
     console.log(isAuthenticated);
   }, [ setIsAuthenticated ]);
+
+  const handleLogout = async () => {
+    try {
+      const response = await api.post('logout');
+      console.log(response);
+      setIsAuthenticated(false);
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
+  }
   
 
   return (
     <CompanyProvider>
-      {isAuthenticated ? <LoggedInApp /> : <LoginPage />}
+      {isAuthenticated ? 
+      (
+      <div>
+        <div id='logout'> <button onClick={ handleLogout }> Log Out </button></div>
+        <LoggedInApp /> 
+      </div>
+      ) : 
+      <LoginPage />}
     </CompanyProvider>
   );
 };

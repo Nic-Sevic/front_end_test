@@ -117,6 +117,12 @@ def get_current_user(request: Request):
 
    
 
-@app.get("/protected")
+@app.get("/protected") # TODO this isn't actually protecting anything right now
 def protected_route(user: str = Depends(get_current_user)):
     return {"message": f"Hello, {user}. This is a protected route!"}
+
+@app.post("/logout")
+def logout(response: Response):
+    print(Response)
+    response.delete_cookie("access_token")  # This removes the HTTP-only cookie
+    return {"message": "Logged out"}
