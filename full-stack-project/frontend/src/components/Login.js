@@ -11,7 +11,6 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      console.log('Logging in with', email, password);
       const response = await getToken(email, password);
       
       setCompanyData(prev => ({
@@ -19,7 +18,6 @@ const Login = () => {
         company_id: response.company_id,
         company_name: response.company_name
       }));
-      console.log(companyData); 
       setIsAuthenticated(true);
     } catch (error) {
       console.error('Login failed', error);

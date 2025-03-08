@@ -101,8 +101,6 @@ export const AuthProvider = ({ children }) => {
 
   const getToken = async (email, password) => {
     try {
-      console.log('Getting token for', email, password
-      );
         const response = await apiService.getToken(email, password);
         return response;
     } catch (error) {

@@ -107,8 +107,9 @@ const MyEmployeeManagement = () => {
     await fetchEmployees(companyData.company_id);
   };
 
+  // TODO do I want to include this?
+  // if so need to add a status column to employee table and handle hiding/reassignment of subordinates
   const handleToggleStatus = async (employee) => {
-    console.log('Toggling status for employee:', employee);
     try {
       const updatedEmployee = employee.status === 'active' ? 'inactive' : 'active';
       const updatedFormData = {...employee, status: updatedEmployee};
@@ -116,18 +117,15 @@ const MyEmployeeManagement = () => {
 
       if (updatedEmployee === 'inactive') {
         const employees = await fetchEmployees(companyData.company_id);
-        console.log('Fetched employees:', employees); // Log the fetched employees
 
         if (!Array.isArray(employees)) {
           throw new Error('fetchEmployees did not return an array');
         }
 
         const employeesToUpdate = employees.filter(emp => emp.manager_id === employee.id);
-        console.log('Employees to update:', employeesToUpdate);
 
         for (const emp of employeesToUpdate) {
           const updatedEmpData = {...emp, manager_id: null};
-          console.log('Updating employee:', updatedEmpData);
           await updateEmployee(emp.id, updatedEmpData);
         }
       }
@@ -141,7 +139,6 @@ const MyEmployeeManagement = () => {
 
   // When the component mounts, fetch employee data if we have a company ID
   useEffect(() => {
-    console.log("State updated:");
     if (companyData.company_id) {
       fetchEmployees(companyData.company_id);
     }

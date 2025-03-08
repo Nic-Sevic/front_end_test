@@ -59,7 +59,6 @@ const MyOrgChart = () => {
 
     // clean up inactive employees from companyData.employeeData
     useEffect(() => {
-      console.log('state updated');
         const activeEmployees = companyData.employeeData.filter(employee => employee.status === 'active');
         setData(transformToHierarchy(activeEmployees));
     }, [companyData.employeeData]);
