@@ -26,7 +26,7 @@ This backend is built using FastAPI and serves as the API for the full-stack pro
 ### Running the Application
 To run the FastAPI application, execute the following command:
 ```
-uvicorn app.main:app --reload
+uvicorn main:app --reload
 ```
 This will start the server at `http://127.0.0.1:8000`.
 

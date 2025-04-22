@@ -42,7 +42,7 @@ full-stack-project
    ```
 3. Run the FastAPI application:
    ```
-   uvicorn app.main:app --reload
+   uvicorn main:app --reload
    ```
 
 #### Frontend

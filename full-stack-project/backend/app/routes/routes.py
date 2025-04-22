@@ -23,7 +23,7 @@ ALGORITHM = "HS256"
 def get_current_user(request: Request, db: Session = Depends(get_db)):
     token = request.cookies.get("access_token")
     if not token:
-        raise HTTPException(status_code=401, detail="Not authenticated; not token")
+        raise HTTPException(status_code=401, detail="Not authenticated")
 
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -50,7 +50,7 @@ def get_current_user(request: Request, db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal server error")
 
-router = APIRouter(dependencies = [Depends(get_current_user)]) # this depends is breaking things currently
+router = APIRouter(dependencies = [Depends(get_current_user)])
 
 # GET all employees
 @router.get("/employees", response_model=List[schemas.Employee])

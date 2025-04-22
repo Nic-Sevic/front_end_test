@@ -6,3 +6,7 @@ app/hash_password_script.py
 node_modules/
 package-lock.json
 hashed_password_setting.py
+backend/backendcert.pem
+backend/backendkey.pem
+frontend/.env
+backend/Dockerfile

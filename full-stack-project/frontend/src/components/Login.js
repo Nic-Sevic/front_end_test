@@ -1,12 +1,11 @@
 import { useState } from 'react';
-import axios from 'axios';
 import { useCompany, useAuth } from '../context/context';
 
 const Login = () => {
   const [email, setEmail] = useState('test@example.com'); // TODO remove these default values
   const [password, setPassword] = useState('password');
-  const { setCompanyData, companyData } = useCompany();
-  const { setIsAuthenticated, getToken, isAuthenticated } = useAuth();
+  const { setCompanyData } = useCompany();
+  const { setIsAuthenticated, getToken } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,7 +24,7 @@ const Login = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form id='login' onSubmit={handleSubmit}>
       <div>
         <label>Email:</label>
         <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />

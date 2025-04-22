@@ -84,6 +84,8 @@ const MyEmployeeManagement = () => {
     }
   };
 
+  // TODO do I want to include these?
+  // if so need to add a status column to employee table and handle hiding/reassignment of subordinates
   const updateStatus = async (employee) => {
     const removeManager = companyData.employeeData.filter(emp => emp.manager_id === employee.id);
     const updatedStatus = employee.status === 'active' ? 'inactive' : 'active';
@@ -107,8 +109,7 @@ const MyEmployeeManagement = () => {
     await fetchEmployees(companyData.company_id);
   };
 
-  // TODO do I want to include this?
-  // if so need to add a status column to employee table and handle hiding/reassignment of subordinates
+  
   const handleToggleStatus = async (employee) => {
     try {
       const updatedEmployee = employee.status === 'active' ? 'inactive' : 'active';
